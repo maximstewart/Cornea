@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Cornea
+GenericName=A python screenshot application.
+Comment=Take screenshots of your desktop.
+Exec=<your_path>/screenshot
+Icon=<your_path>/resources/cornea.png
+Type=Application
+StartupNotify=true
+Categories=Utility;
+MimeType=text/plain;
+Terminal=false
