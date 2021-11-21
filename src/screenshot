@@ -7,8 +7,7 @@
 
 function main() {
     SCRIPTPATH="$( cd "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-    cd "${SCRIPTPATH}"
-    source "../venv/bin/activate"
-    python .
+    # source "/home/abaddon/Portable_Apps/py-venvs/flask-apps-venv/venv/bin/activate"
+    python "${SCRIPTPATH}"
 }
 main $@;
