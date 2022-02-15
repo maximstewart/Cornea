@@ -1,10 +1,10 @@
-# Gtk imports
-from gi.repository import GLib as glib
-
 # Python imports
 import os, threading, time, datetime
 
+# Lib imports
+from gi.repository import GLib
 import pyscreenshot as capture
+
 
 # Application imports
 
@@ -18,10 +18,10 @@ def threaded(fn):
 
 class CrossClassSignals:
     def __init__(self, settings):
-        self.settings     = settings
-        self.builder      = self.settings.returnBuilder()
+        self.settings        = settings
+        self.builder         = self.settings.returnBuilder()
         self.SCREENSHOTS_DIR = self.settings.returnScreenshotsDir()
-        self.fileStore    = self.builder.get_object("fileStore")
+        self.fileStore       = self.builder.get_object("fileStore")
         self.refreshingState = False
 
 
@@ -40,7 +40,7 @@ class CrossClassSignals:
         if len(images) != len(self.fileStore):
             self.fileStore.clear()
             for image in images:
-                glib.idle_add(self.addToStore, (image))
+                GLib.idle_add(self.addToStore, (image))
 
         # self.fileStore.sort()
         self.refreshingState = False

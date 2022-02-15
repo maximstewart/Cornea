@@ -1,22 +1,17 @@
 # Python imports
 import inspect
-
 from setproctitle import setproctitle
 
-# Gtk imports
-import gi, faulthandler, signal
-gi.require_version('Gtk', '3.0')
+# Lib imports
 
-from gi.repository import Gtk as gtk
-from gi.repository import Gdk as gdk
-from gi.repository import GLib
 
 # Application imports
+from __builtins__ import Builtins
 from utils import Settings, CrossClassSignals
 from signal_classes import MainWindow, DrawingArea, MainMenuPopup
 
 
-class Main:
+class Main(Builtins):
     def __init__(self, args):
         settings = Settings()
         builder  = settings.returnBuilder()

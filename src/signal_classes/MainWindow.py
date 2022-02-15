@@ -1,15 +1,14 @@
-# Gtk imports
+# Python imports
+import threading, subprocess, os
+import pyscreenshot as capture
+
+# Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Gdk', '3.0')
 
-from gi.repository import Gtk as gtk
-from gi.repository import Gdk as gdk
-from gi.repository import GLib as glib
-
-# Python imports
-import threading, subprocess, os
-import pyscreenshot as capture
+from gi.repository import Gtk as Gtk
+from gi.repository import Gdk as Gdk
 
 # Application imports
 
@@ -78,9 +77,9 @@ class MainWindow:
     def getActiveWindow(self):
         self.utilsClass.sleep()
 
-        screen = gdk.get_default_root_window().get_screen()
+        screen = Gdk.get_default_root_window().get_screen()
         w      = screen.get_active_window()
-        pb     = gdk.pixbuf_get_from_window(w, *w.get_geometry())
+        pb     = Gdk.pixbuf_get_from_window(w, *w.get_geometry())
         pb.savev(self.utilsClass.generateScreenshotName(), "png", (), ())
 
     def snapshotMonitor(self):
@@ -129,7 +128,7 @@ class MainWindow:
                 try:
                     if os.path.isfile(fullPath):
                         fileNameEntry.set_text(file)
-                        pixbuf       = gtk.Image.new_from_file(fullPath).get_pixbuf()
+                        pixbuf       = Gtk.Image.new_from_file(fullPath).get_pixbuf()
                         scaledPixBuf = pixbuf.scale_simple(480, 320, 2)  # 2 = BILINEAR and is best by default
                         imageView.set_from_pixbuf(scaledPixBuf)
                 except Exception as e:
@@ -146,8 +145,8 @@ class MainWindow:
         return active_radio
 
     def showMainMenu(self, w, e):
-        if e.type == gdk.EventType.BUTTON_PRESS and e.button == MouseButtons.RIGHT_BUTTON:
+        if e.type == Gdk.EventType.BUTTON_PRESS and e.button == MouseButtons.RIGHT_BUTTON:
             self.builder.get_object("mainMenu").popup()
 
     def close(self, widget):
-        gtk.main_quit()
+        Gtk.main_quit()

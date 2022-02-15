@@ -1,7 +1,8 @@
-# Gtk imports
-
 # Python imports
 import os, subprocess
+
+# lib imports
+
 
 # Application imports
 
