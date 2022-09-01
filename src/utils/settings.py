@@ -43,14 +43,14 @@ class Settings:
         self.builder.add_from_file(self._GLADE_FILE)
 
 
-    def createWindow(self):
+    def create_window(self):
         # Get window and connect signals
         window = self.builder.get_object("Main_Window")
         window.connect("delete-event", Gtk.main_quit)
-        self.setWindowData(window)
+        self.set_window_data(window)
         return window
 
-    def setWindowData(self, window):
+    def set_window_data(self, window):
         screen = window.get_screen()
         visual = screen.get_rgba_visual()
 
@@ -58,13 +58,13 @@ class Settings:
             window.set_visual(visual)
 
         # bind css file
-        cssProvider  = Gtk.CssProvider()
-        cssProvider.load_from_path(self._CSS_FILE)
-        screen       = Gdk.Screen.get_default()
-        styleContext = Gtk.StyleContext()
-        styleContext.add_provider_for_screen(screen, cssProvider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
+        css_provider  = Gtk.CssProvider()
+        css_provider.load_from_path(self._CSS_FILE)
+        screen        = Gdk.Screen.get_default()
+        style_context = Gtk.StyleContext()
+        style_context.add_provider_for_screen(screen, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
 
-    def getMonitorData(self):
+    def get_monitor_data(self):
         screen      = self.builder.get_object("Main_Window").get_screen()
         wdth        = screen.get_width()
         hght        = screen.get_height()
@@ -80,8 +80,8 @@ class Settings:
         return monitors
 
 
-    def returnBuilder(self):             return self.builder
-    def returnScreenshotsDir(self):      return self.SCREENSHOTS_DIR
+    def get_builder(self):         return self.builder
+    def get_screenshots_dir(self): return self.SCREENSHOTS_DIR
 
     # Filter returns
-    def returnImagesFilter(self):        return self.images
+    def get_images_filter(self):   return self.images

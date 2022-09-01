@@ -67,7 +67,7 @@
                 <property name="receives-default">True</property>
                 <property name="image">grabRegionImage</property>
                 <property name="always-show-image">True</property>
-                <signal name="clicked" handler="grabRegion" swapped="no"/>
+                <signal name="clicked" handler="grab_region" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -83,7 +83,7 @@
                 <property name="receives-default">True</property>
                 <property name="use-stock">True</property>
                 <property name="always-show-image">True</property>
-                <signal name="clicked" handler="returnToMainWindow" swapped="no"/>
+                <signal name="clicked" handler="go_to_main_window" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -169,7 +169,7 @@
                     <property name="margin-bottom">5</property>
                     <property name="active">True</property>
                     <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="toggleRadioBttn" swapped="no"/>
+                    <signal name="toggled" handler="toggle_radio_bttn" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -189,7 +189,7 @@
                     <property name="active">True</property>
                     <property name="draw-indicator">True</property>
                     <property name="group">entireScrnToggle</property>
-                    <signal name="toggled" handler="toggleRadioBttn" swapped="no"/>
+                    <signal name="toggled" handler="toggle_radio_bttn" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -209,7 +209,7 @@
                     <property name="active">True</property>
                     <property name="draw-indicator">True</property>
                     <property name="group">entireScrnToggle</property>
-                    <signal name="toggled" handler="toggleRadioBttn" swapped="no"/>
+                    <signal name="toggled" handler="toggle_radio_bttn" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -229,7 +229,7 @@
                     <property name="active">True</property>
                     <property name="draw-indicator">True</property>
                     <property name="group">entireScrnToggle</property>
-                    <signal name="toggled" handler="toggleRadioBttn" swapped="no"/>
+                    <signal name="toggled" handler="toggle_radio_bttn" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -400,10 +400,10 @@
                     <property name="can-focus">True</property>
                     <property name="model">fileStore</property>
                     <property name="headers-clickable">False</property>
-                    <signal name="button-press-event" handler="showMainMenu" swapped="no"/>
+                    <signal name="button-press-event" handler="show_main_menu" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection">
-                        <signal name="changed" handler="setImage" swapped="no"/>
+                        <signal name="changed" handler="set_image" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -459,7 +459,7 @@
     <property name="height-request">150</property>
     <property name="can-focus">False</property>
     <property name="relative-to">popup_bind_area</property>
-    <signal name="grab-focus" handler="setBackupVar" swapped="no"/>
+    <signal name="grab-focus" handler="set_backup_var" swapped="no"/>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
@@ -489,7 +489,7 @@
                 <property name="receives-default">True</property>
                 <property name="image">revertImage</property>
                 <property name="always-show-image">True</property>
-                <signal name="clicked" handler="resetName" swapped="no"/>
+                <signal name="clicked" handler="reset_name" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -512,7 +512,7 @@
             <property name="receives-default">True</property>
             <property name="image">renameImage</property>
             <property name="always-show-image">True</property>
-            <signal name="clicked" handler="renameFile" swapped="no"/>
+            <signal name="clicked" handler="rename_file" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -528,7 +528,7 @@
             <property name="receives-default">True</property>
             <property name="use-stock">True</property>
             <property name="always-show-image">True</property>
-            <signal name="clicked" handler="openFile" swapped="no"/>
+            <signal name="clicked" handler="open_file" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -544,7 +544,7 @@
             <property name="receives-default">True</property>
             <property name="use-stock">True</property>
             <property name="always-show-image">True</property>
-            <signal name="clicked" handler="deleteFile" swapped="no"/>
+            <signal name="clicked" handler="delete_file" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>

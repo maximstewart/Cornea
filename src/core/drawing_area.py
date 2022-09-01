@@ -1,5 +1,5 @@
 # Python imports
-import threading, html
+import html, time
 
 import pyscreenshot as capture
 
@@ -14,11 +14,6 @@ from gi.repository import GLib
 
 
 
-def threaded(fn):
-    def wrapper(*args, **kwargs):
-        threading.Thread(target=fn, args=args, kwargs=kwargs).start()
-
-    return wrapper
 
 class MouseButtons:
     LEFT_BUTTON  = 1
@@ -26,21 +21,21 @@ class MouseButtons:
 
 
 class DrawingArea:
-    def __init__(self, settings, utilsClass):
-        self.settings     = settings
-        self.utilsClass   = utilsClass
-        self.builder      = self.settings.returnBuilder()
+    def __init__(self, _settings, _utils):
+        self.settings      = _settings
+        self.utils         = _utils
 
-        self.mainWindow   = self.builder.get_object('Main_Window')
-        self.regionWindow = self.builder.get_object('Region_Window')
-        self.regionMenu   = self.builder.get_object('regionMenu')
-        self.messageLabel = self.builder.get_object('messageLabel')
-        MONITOR           = self.settings.getMonitorData()
+        self.builder       = self.settings.get_builder()
+        self.main_window   = self.builder.get_object('Main_Window')
+        self.region_window = self.builder.get_object('Region_Window')
+        self.region_menu   = self.builder.get_object('regionMenu')
+        self.message_label = self.builder.get_object('messageLabel')
+        MONITOR            = self.settings.get_monitor_data()
 
-        self.settings.setWindowData(self.regionWindow)
-        self.regionWindow.set_default_size(MONITOR[0].width, MONITOR[0].height)
-        self.regionWindow.set_size_request(MONITOR[0].width, MONITOR[0].height)
-        self.regionWindow.set_keep_above(True)
+        self.settings.set_window_data(self.region_window)
+        self.region_window.set_default_size(MONITOR[0].width, MONITOR[0].height)
+        self.region_window.set_size_request(MONITOR[0].width, MONITOR[0].height)
+        self.region_window.set_keep_above(True)
 
         self.DRAW_AREA = self.builder.get_object("selectionArea")
         self.DRAW_AREA.add_events(Gdk.EventMask.BUTTON_PRESS_MASK)
@@ -51,8 +46,8 @@ class DrawingArea:
         self.DRAW_AREA.connect("motion-notify-event", self.on_mouse_move)
         self.DRAW_AREA.connect("draw", self.on_draw)
 
-        area                 = self.settings.getMonitorData()[0]
-        self.SCREENSHOTS_DIR = self.settings.returnScreenshotsDir()
+        area                 = self.settings.get_monitor_data()[0]
+        self.SCREENSHOTS_DIR = self.settings.get_screenshots_dir()
         self.WIN_REC         = [area.x, area.y, area.width, area.height]
         self.coords          = [[0.0, 0.0], [0.0, 0.0]] # point1 and point2
         self.BORDER_COLOR    = [255, 0, 0, 0.84]
@@ -64,26 +59,25 @@ class DrawingArea:
         self.rec             = None
         self.cr              = None
 
-        self.regionWindow.set_default_size(area.width, area.height)
-        self.regionWindow.set_size_request(area.width, area.height)
-        self.regionWindow.move(area.x, area.y)
-        self.regionWindow.set_resizable(False)
-        self.regionWindow.set_keep_above(True)
-
+        self.region_window.set_default_size(area.width, area.height)
+        self.region_window.set_size_request(area.width, area.height)
+        self.region_window.move(area.x, area.y)
+        self.region_window.set_resizable(False)
+        self.region_window.set_keep_above(True)
 
 
     def on_button_press(self, w, e):
-        self.messageLabel.set_markup("")
+        self.message_label.set_markup("")
         if e.type == Gdk.EventType.BUTTON_PRESS and e.button == MouseButtons.LEFT_BUTTON:
             self.coords[0] = [e.x, e.y]
-            self.regionMenu.hide()
+            self.region_menu.hide()
 
             # This will reset draw area initially. No further use
             if self.cr:
                 self.draw(self.cr, self.WIN_REC, self.BG_COLOR)
                 self.DRAW_AREA.queue_draw()
         if e.type == Gdk.EventType.BUTTON_PRESS and e.button == MouseButtons.RIGHT_BUTTON:
-            self.regionMenu.show()
+            self.region_menu.show()
 
     # Update second set of coords.
     def on_mouse_move(self, w, e):
@@ -93,28 +87,29 @@ class DrawingArea:
     @threaded
     def on_button_release(self, w, e):
         if e.type == Gdk.EventType.BUTTON_RELEASE and e.button == MouseButtons.LEFT_BUTTON:
-            GLib.idle_add(self.regionMenu.show)
+            GLib.idle_add(self.region_menu.show)
 
     @threaded
-    def grabRegion(self, widget):
-        GLib.idle_add(self.grabRegionIdle)
+    def grab_region(self, widget):
+        self.main_window.hide()
+        self.region_menu.hide()
+
+        GLib.idle_add(self.grab_regionIdle)
 
     @threaded
-    def returnToMainWindow(self, widget):
-        GLib.idle_add(self.returnToMainWindowIdle)
+    def go_to_main_window(self, widget):
+        GLib.idle_add(self.go_to_main_window_idle)
 
-    def grabRegionIdle(self):
-        self.mainWindow.hide()
-        self.regionMenu.hide()
-        self.boundingBoxGrab(self.rec[0], self.rec[1], self.rec[2], self.rec[3])
-        self.regionMenu.show()
-        self.mainWindow.show()
-        self.utilsClass.refereshDirectoryList()
+    def grab_regionIdle(self):
+        self.do_bounding_box_grab(self.rec[0], self.rec[1], self.rec[2], self.rec[3])
+        self.utils.referesh_directory_list()
+        self.region_menu.show()
+        self.main_window.show()
 
-    def returnToMainWindowIdle(self):
-        self.regionWindow.hide()
-        self.regionMenu.hide()
-        self.mainWindow.show()
+    def go_to_main_window_idle(self):
+        self.region_window.hide()
+        self.region_menu.hide()
+        self.main_window.show()
 
 
     def on_draw(self, wid, cr):
@@ -134,7 +129,7 @@ class DrawingArea:
         # Rectangle information for region and screen grab
         self.rec = [int(x1), int(y1), int(x2), int(y2)]
         # Draw the new selection region
-        self.selectionDraw(cr, [x1, y1, w, h], self.BORDER_COLOR, self.TRANS_COLOR)
+        self.selection_draw(cr, [x1, y1, w, h], self.BORDER_COLOR, self.TRANS_COLOR)
 
 
     def draw(self, cr, x1y1wh, rgba):
@@ -143,7 +138,7 @@ class DrawingArea:
         cr.set_operator(1);
         cr.fill()
 
-    def selectionDraw(self, cr, x1y1wh, brdrcol, transclr):
+    def selection_draw(self, cr, x1y1wh, brdrcol, transclr):
         # Clear the region
         cr.set_source_rgba(transclr[0], transclr[1], transclr[2], transclr[3])
         cr.rectangle(x1y1wh[0], x1y1wh[1], x1y1wh[2], x1y1wh[3])
@@ -157,8 +152,8 @@ class DrawingArea:
         cr.stroke()
 
     # Actual region grab
-    def boundingBoxGrab(self, x1, y1, x2, y2):
-        self.utilsClass.sleep(0.4)
+    def do_bounding_box_grab(self, x1, y1, x2, y2):
+        self.utils.sleep(0.4)
         try:
             temp = 0;
             if x2 < x1:
@@ -172,11 +167,11 @@ class DrawingArea:
                 y2   = temp
 
 
-            self.utilsClass.boundingBoxGrab(x1, y1, x2, y2)
+            self.utils.do_bounding_box_grab(x1, y1, x2, y2)
             markup = "<span foreground='" + self.success + "'>Grabbed region successfully...</span>"
-            GLib.idle_add(self.messageLabel.set_markup, markup)
+            GLib.idle_add(self.message_label.set_markup, markup)
         except Exception as e:
             print(e)
             markup = "<span foreground='" + self.warning + "' >Oops...</span>" + \
                     "\n<span foreground='" + self.error + "'>" + html.escape( str(e) ) + "</span>"
-            GLib.idle_add(self.messageLabel.set_markup, markup)
+            GLib.idle_add(self.message_label.set_markup, markup)
