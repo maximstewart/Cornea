@@ -4,6 +4,9 @@ import builtins, threading
 # Lib imports
 
 # Application imports
+from utils.event_system import EventSystem
+from utils.endpoint_registry import EndpointRegistry
+from utils.settings import Settings
 
 
 
@@ -21,18 +24,16 @@ def daemon_threaded_wrapper(fn):
 
 
 
-
-class Builtins:
-    """Docstring for __builtins__ extender"""
-
-    def __init__(self):
-        pass
-
-
-
-
 # NOTE: Just reminding myself we can add to builtins two different ways...
 # __builtins__.update({"event_system": Builtins()})
 builtins.app_name          = "Cornea"
 builtins.threaded          = threaded_wrapper
 builtins.daemon_threaded   = daemon_threaded_wrapper
+
+builtins.settings          = Settings()
+builtins.logger            = settings.get_logger()
+builtins.event_system      = EventSystem()
+builtins.endpoint_registry = EndpointRegistry()
+
+from utils.utils import Utils
+builtins.utils             = Utils()

@@ -5,18 +5,16 @@ import os, time, datetime
 from gi.repository import GLib
 import pyscreenshot as capture
 
-
 # Application imports
 
 
 
 
 class Utils:
-    def __init__(self, _settings):
-        self.settings         = _settings
-        self.builder          = self.settings.get_builder()
+    def __init__(self):
+        self.builder          = settings.get_builder()
 
-        self.SCREENSHOTS_DIR  = self.settings.get_screenshots_dir()
+        self.SCREENSHOTS_DIR  = settings.get_screenshots_dir()
         self.file_store       = self.builder.get_object("fileStore")
         self.refreshing_state = False
 
@@ -31,6 +29,7 @@ class Utils:
     @threaded
     def referesh_directory_list(self):
         self.refreshing_state = True
+
         images = self.get_directory_list()
         images.sort()
         if len(images) != len(self.file_store):
@@ -38,11 +37,9 @@ class Utils:
             for image in images:
                 GLib.idle_add(self.add_to_store, (image))
 
-        # self.file_store.sort()
         self.refreshing_state = False
 
 
-    @threaded
     def add_to_store(self, image):
         self.file_store.append([image])
 
@@ -82,7 +79,7 @@ class Utils:
         data    = proc.stdout.read()
         return data.decode("utf-8").strip()
 
-    def setClipboardData(self, data):
+    def set_clipboard_data(self, data):
         proc = subprocess.Popen(['xclip','-selection','clipboard'], stdin=subprocess.PIPE)
         proc.stdin.write(data)
         proc.stdin.close()

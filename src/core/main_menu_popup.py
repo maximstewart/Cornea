@@ -8,13 +8,10 @@ import os, subprocess
 
 
 class MainMenuPopup:
-    def __init__(self, _settings, _utils):
-        self.settings        = _settings
-        self.utils           = _utils
-
-        self.builder         = self.settings.get_builder()
+    def __init__(self):
+        self.builder         = settings.get_builder()
         self.file_name_entry = self.builder.get_object("fileNameEntry")
-        self.SCREENSHOTS_DIR = self.settings.get_screenshots_dir()
+        self.SCREENSHOTS_DIR = settings.get_screenshots_dir()
         self.backup_name     = None
 
 
@@ -26,7 +23,7 @@ class MainMenuPopup:
             if os.path.isfile(old_file_path) and new_name:
                 os.rename(old_file_path, new_file_path)
                 self.backup_name = new_name
-                self.utils.referesh_directory_list()
+                utils.referesh_directory_list()
         except Exception as e:
             print(repr(e))
 
@@ -40,7 +37,7 @@ class MainMenuPopup:
             if os.path.isfile(file):
                 os.remove(file)
                 self.builder.get_object("mainMenu").popdown()
-                self.utils.referesh_directory_list()
+                utils.referesh_directory_list()
         except Exception as e:
             print(repr(e))
 

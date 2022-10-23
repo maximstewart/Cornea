@@ -1,5 +1,5 @@
 # Python imports
-import os
+import os, signal, time
 import pyscreenshot as capture
 
 # Lib imports
@@ -21,16 +21,13 @@ class MouseButtons:
 
 
 class MainWindow:
-    def __init__(self, _settings, _utils):
-        self.settings      = _settings
-        self.utils         = _utils
-
-        self.builder       = self.settings.get_builder()
+    def __init__(self):
+        self.builder       = settings.get_builder()
         self.main_window   = self.builder.get_object('Main_Window')
         self.region_window = self.builder.get_object('Region_Window')
         self.monitors_view = self.builder.get_object("monitorsView")
         self.monitor_store = self.builder.get_object("monitorStore")
-        self.MONITORS      = self.settings.get_monitor_data()
+        self.MONITORS      = settings.get_monitor_data()
 
         # Not adding the reference monitor
         i = 0
@@ -42,8 +39,10 @@ class MainWindow:
 
         self.monitors_view.set_cursor(1)
 
-        self.SCREENSHOTS_DIR = self.settings.get_screenshots_dir()
-        self.utils.referesh_directory_list()
+        self.SCREENSHOTS_DIR = settings.get_screenshots_dir()
+        utils.referesh_directory_list()
+
+        GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, Gtk.main_quit)
 
 
     def take_screenshot(self, widget):
@@ -60,39 +59,52 @@ class MainWindow:
             self.snapshot_monitor()
 
 
-    @threaded
     def grab_entire_screen(self):
         self.main_window.hide()
-        GLib.idle_add(self.get_entire_screen)
+        self.get_entire_screen()
 
     def get_entire_screen(self):
         # childprocess=False needed to not crash program
         im = capture.grab(childprocess=False)
-        im.save(self.utils.generate_screenshot_name())
+        im.save(utils.generate_screenshot_name())
         self.main_window.show()
-        self.utils.referesh_directory_list()
+        utils.referesh_directory_list()
 
     def get_active_window(self):
-        self.utils.sleep()
+        utils.sleep()
 
         screen = Gdk.get_default_root_window().get_screen()
         w      = screen.get_active_window()
         pb     = Gdk.pixbuf_get_from_window(w, *w.get_geometry())
-        pb.savev(self.utils.generate_screenshot_name(), "png", (), ())
-        self.utils.referesh_directory_list()
+        pb.savev(utils.generate_screenshot_name(), "png", (), ())
+        utils.referesh_directory_list()
 
+
+
+    @daemon_threaded
     def snapshot_monitor(self):
+        GLib.idle_add(self.main_window.hide)
+
+        while self.main_window.is_visible():
+            ...
+
+        time.sleep(0.05)
+        GLib.idle_add(self.do_snapshot_monitor)
+
+
+    def do_snapshot_monitor(self):
         iterator      = self.monitors_view.get_selection().get_selected()[1]
         path          = self.monitor_store.get_path(iterator)
         # Slot 0 is ref monitor. Need to add 1 to get proper slot
         monitor       = self.MONITORS[int(str(path)) + 1]
 
-        self.utils.sleep()
+        utils.sleep()
 
         x2 = monitor.x + monitor.width
         y2 = monitor.y + monitor.height
-        self.utils.do_bounding_box_grab(monitor.x, monitor.y, x2, y2)
-        self.utils.referesh_directory_list()
+        utils.do_bounding_box_grab(monitor.x, monitor.y, x2, y2)
+        utils.referesh_directory_list()
+        self.main_window.show()
 
     def toggle_radio_bttn(self, widget):
         delay_amount   = self.builder.get_object('delayAmount')
@@ -115,7 +127,7 @@ class MainWindow:
     def set_image(self, user_data):
         # We need the refresh state for the files list b/c GtkTreeSelection
         # is calling this method b/c caling this too quickly causes issues...
-        if self.utils.get_refreshing_state() == False:
+        if utils.get_refreshing_state() == False:
             selected  = user_data.get_selected()[1]
             if selected:
                 fileNameEntry = self.builder.get_object("fileNameEntry")
