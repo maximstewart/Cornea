@@ -9,9 +9,15 @@
 
 function main() {
     call_path=`pwd`
-    cd "${call_path}"
-    echo "Working Dir: " $(pwd)
+    path=""
 
+    if [[ ! "${1::1}" == /* ]]; then
+        path="${call_path}/${1}"
+    else
+        path="${1}"
+    fi
+
+    cd "/opt/"
     python /opt/cornea.zip "$@"
 }
 main "$@";
