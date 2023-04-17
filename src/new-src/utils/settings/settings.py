@@ -4,6 +4,9 @@ import json
 import inspect
 
 # Lib imports
+import gi
+gi.require_version('Gdk', '3.0')
+from gi.repository import Gdk
 
 # Application imports
 from ..singleton import Singleton
@@ -23,6 +26,7 @@ class Settings(StartCheckMixin, Singleton):
 
         self._USR_CONFIG_FILE   = f"{self._USR_PATH}/settings.json"
         self._HOME_CONFIG_PATH  = f"{self._USER_HOME}/.config/{app_name.lower()}"
+        self._SCREENSHOTS_DIR   = f"{self._USER_HOME}/.screenshots"
         self._PLUGINS_PATH      = f"{self._HOME_CONFIG_PATH}/plugins"
         self._DEFAULT_ICONS     = f"{self._HOME_CONFIG_PATH}/icons"
         self._CONFIG_FILE       = f"{self._HOME_CONFIG_PATH}/settings.json"
@@ -30,14 +34,17 @@ class Settings(StartCheckMixin, Singleton):
         self._CSS_FILE          = f"{self._HOME_CONFIG_PATH}/stylesheet.css"
         self._KEY_BINDINGS_FILE = f"{self._HOME_CONFIG_PATH}/key-bindings.json"
         self._PID_FILE          = f"{self._HOME_CONFIG_PATH}/{app_name.lower()}.pid"
-        self._WINDOW_ICON       = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
         self._UI_WIDEGTS_PATH   = f"{self._HOME_CONFIG_PATH}/ui_widgets"
         self._CONTEXT_MENU      = f"{self._HOME_CONFIG_PATH}/contexct_menu.json"
+        self._WINDOW_ICON       = f"{self._DEFAULT_ICONS}/{app_name.lower()}.png"
+
 
         if not os.path.exists(self._HOME_CONFIG_PATH):
             os.mkdir(self._HOME_CONFIG_PATH)
         if not os.path.exists(self._PLUGINS_PATH):
             os.mkdir(self._PLUGINS_PATH)
+        if not os.path.isdir(self._SCREENSHOTS_DIR):
+            os.mkdir(self._SCREENSHOTS_DIR)
 
         if not os.path.exists(self._CONFIG_FILE):
             import shutil
@@ -87,8 +94,8 @@ class Settings(StartCheckMixin, Singleton):
 
 
         self._main_window   = None
-        self._main_window_w = 800
-        self._main_window_h = 600
+        self._main_window_w = 500
+        self._main_window_h = 310
         self._builder       = None
         self.PAINT_BG_COLOR = (0, 0, 0, 0.54)
 
@@ -134,6 +141,7 @@ class Settings(StartCheckMixin, Singleton):
     def get_ui_widgets_path(self)    -> str: return self._UI_WIDEGTS_PATH
     def get_context_menu_data(self)  -> str: return self._context_menu_data
 
+    def get_screenshots_dir(self)  -> str:   return self._SCREENSHOTS_DIR
     def get_plugins_path(self)     -> str:   return self._PLUGINS_PATH
     def get_icon_theme(self)       -> str:   return self._ICON_THEME
     def get_css_file(self)         -> str:   return self._CSS_FILE
@@ -175,3 +183,28 @@ class Settings(StartCheckMixin, Singleton):
     def save_settings(self):
         with open(self._CONFIG_FILE, 'w') as outfile:
             json.dump(self._settings, outfile, separators=(',', ':'), indent=4)
+
+
+    def get_monitor_data(self):
+        screen      = self.get_main_window().get_screen()
+        wdth        = screen.get_width()
+        hght        = screen.get_height()
+        mon0        = Gdk.Rectangle()
+        mon0.width  = wdth
+        mon0.height = hght
+        monitors    = []
+
+        monitors.append(mon0)
+        for m in range(screen.get_n_monitors()):
+            monitors.append(screen.get_monitor_geometry(m))
+
+        return monitors
+
+    def get_directory_list(self):
+        files = []
+
+        for file in os.listdir(self._SCREENSHOTS_DIR):
+            if os.path.isfile(os.path.join(self._SCREENSHOTS_DIR, file)):
+                files.append(file)
+
+        return files
