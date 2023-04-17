@@ -8,9 +8,9 @@ from utils.ipc_server import IPCServer
 from core.window import Window
 
 
+
 class AppLaunchException(Exception):
     ...
-
 
 
 class Application(IPCServer):
@@ -26,7 +26,7 @@ class Application(IPCServer):
 
             if not self.is_ipc_alive:
                 for arg in unknownargs + [args.new_tab,]:
-                    if os.path.isdir(arg):
+                    if os.path.isfile(arg):
                         message = f"FILE|{arg}"
                         self.send_ipc_message(message)
 

@@ -9,7 +9,6 @@ from plugins.plugins_controller import PluginsController
 
 
 
-
 class ControllerData:
     ''' ControllerData contains most of the state of the app at ay given time. It also has some support methods. '''
 

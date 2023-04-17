@@ -2,6 +2,7 @@
 import os
 import json
 import inspect
+import datetime
 
 # Lib imports
 import gi
@@ -208,3 +209,10 @@ class Settings(StartCheckMixin, Singleton):
                 files.append(file)
 
         return files
+
+    def generate_screenshot_name(self):
+        return f"{self._SCREENSHOTS_DIR}/scrshot_{self.get_time()}.png"
+
+    def get_time(self):
+        now  = datetime.datetime.now()
+        return now.strftime("%Y-%m-%d %H:%M:%S")

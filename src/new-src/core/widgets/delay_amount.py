@@ -1,4 +1,5 @@
 # Python imports
+import time
 
 # Lib imports
 import gi
@@ -15,6 +16,7 @@ class DelayAmount(Gtk.Box):
 
         self._setup_styling()
         self._setup_signals()
+        self._subscribe_to_events()
         self._load_widgets()
 
         self.show_all()
@@ -28,6 +30,9 @@ class DelayAmount(Gtk.Box):
     def _setup_signals(self):
         ...
 
+    def _subscribe_to_events(self):
+        event_system.subscribe("grab_delay", self.grab_delay)
+
     def _load_widgets(self):
         label   = Gtk.Label("Timeout:  ")
         spinner = Gtk.SpinButton()
@@ -36,8 +41,15 @@ class DelayAmount(Gtk.Box):
         spinner.set_numeric(True)
         spinner.set_snap_to_ticks(True)
         spinner.set_digits(0)
-        spinner.set_range(1, 120)
+        spinner.set_range(0, 120)
         spinner.set_increments(1, 5)
 
         self.add(label)
         self.add(spinner)
+
+    def grab_delay(self, wait = None):
+        delay_amount = self.get_children()[1]
+        if not wait:
+            wait = delay_amount.get_value_as_int()
+
+        time.sleep(wait)

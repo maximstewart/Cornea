@@ -15,10 +15,9 @@ from gi.repository import GLib
 from core.controller import Controller
 
 
+
 class ControllerStartExceptiom(Exception):
     ...
-
-
 
 
 class Window(Gtk.ApplicationWindow):

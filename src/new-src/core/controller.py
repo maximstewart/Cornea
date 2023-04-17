@@ -12,8 +12,8 @@ from gi.repository import GLib
 # Application imports
 from .mixins.signals_mixins import SignalsMixins
 from .controller_data import ControllerData
+from .screenshot_controller import ScreenshotController
 from .containers.core_widget import CoreWidget
-
 
 
 
@@ -24,6 +24,7 @@ class Controller(SignalsMixins, ControllerData):
         self._setup_styling()
         self._setup_signals()
         self._subscribe_to_events()
+        self._load_widgets()
 
         if args.no_plugins == "false":
             self.plugins.launch_plugins()
@@ -51,9 +52,12 @@ class Controller(SignalsMixins, ControllerData):
         event_system.subscribe("handle_dir_from_ipc", self.handle_dir_from_ipc)
         event_system.subscribe("tggl_top_main_menubar", self._tggl_top_main_menubar)
 
+    def _load_widgets(self):
+        ScreenshotController()
+
     def load_glade_file(self):
         self.builder     = Gtk.Builder()
-        self.builder.add_from_file(settings.get_glade_file())
+        # self.builder.add_from_file(settings.get_glade_file())
         self.builder.expose_object("main_window", self.window)
 
         settings.set_builder(self.builder)

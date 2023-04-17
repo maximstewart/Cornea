@@ -37,9 +37,12 @@ class SnapshotButton(Gtk.Button):
         self.set_image(image)
 
     def _take_snapshot(self, widget = None, eve = None):
-        type = event_system.emit_and_await("get_screenshot_type").get_label()
-        print(type)
-        # NOTE:
-        # 1. Get type of screenshot
-        # 2. Grab screenshot
-        # 3. Emit images list file update
+        active = event_system.emit_and_await("get_screenshot_type").get_label()
+        if "Entire Screen" in active:
+            event_system.emit("grab_entire_screen")
+        if "Active Window" in active:
+            event_system.emit("grab_active_window")
+        if "Select Region" in active:
+            event_system.emit("pass_to_region_handler")
+        if "Select Monitor" in active:
+            event_system.emit("grab_selected_monitor")

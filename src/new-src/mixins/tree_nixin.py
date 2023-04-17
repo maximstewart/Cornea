@@ -20,7 +20,7 @@ class TreeMixin:
 
         grid.set_model(store)
         selec.set_mode(2)
-        scroll.set_size_request(145, 96)
+        scroll.set_size_request(145, 72)
 
         column.pack_start(name, True)
         column.add_attribute(name, "text", 0)
