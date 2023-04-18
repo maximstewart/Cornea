@@ -3,12 +3,13 @@
 # Lib imports
 import gi
 gi.require_version('Gdk', '3.0')
-from gi.repository import Gdk as Gdk
+from gi.repository import Gdk
 from gi.repository import GLib
 
 import pyscreenshot as capture
 
 # Application imports
+from .widgets.region.window import RegionWindow
 
 
 
@@ -35,7 +36,7 @@ class ScreenshotController:
         event_system.subscribe("grab_selected_monitor", self.grab_selected_monitor)
 
     def _load_widgets(self):
-        ...
+        RegionWindow()
 
     def grab_entire_screen(self):
         logger.info("Grabbing Entire Screen...")
@@ -64,6 +65,7 @@ class ScreenshotController:
         logger.info("Grabbing Selected Region Stub...")
         # window  = settings.get_main_window()
         # window.hide()
+        event_system.emit("show_region_window")
 
     def grab_selected_monitor(self):
         logger.info("Grabbing Monitor...")
