@@ -26,7 +26,11 @@ class RegionWindow(Gtk.Window):
 
     def _setup_styling(self):
         self.set_default_size(600, 480)
+        self.set_deletable(False)
         self.set_decorated(False)
+        self.set_resizable(True)
+        self.set_skip_pager_hint(True)
+        self.set_skip_taskbar_hint(True)
 
     def _setup_signals(self):
         ...
@@ -35,7 +39,8 @@ class RegionWindow(Gtk.Window):
         event_system.subscribe("show_region_window", self._show_region_window)
 
     def _load_widgets(self):
-        self.add(BodyGrid())
+        gdk_window = self.get_screen().get_root_window()
+        self.add( BodyGrid(gdk_window) )
 
     def _set_window_data(self) -> None:
         screen = self.get_screen()

@@ -11,11 +11,11 @@ from gi.repository import Gdk
 
 
 class BodyGrid(Gtk.Grid):
-    def __init__(self):
+    def __init__(self, gdk_window):
         super(BodyGrid, self).__init__()
 
-        self._drag_start_x = 0
-        self._drag_start_y = 0
+        self._gdk_window = gdk_window
+        self.is_dragging = False
 
         self._setup_styling()
         self._setup_signals()
@@ -80,7 +80,6 @@ class BodyGrid(Gtk.Grid):
         box3.set_vexpand(True)
         box3.set_hexpand(True)
 
-
         top_left.connect("button-press-event", self._press_event)
         top_right.connect("button-press-event", self._press_event)
         bottom_left.connect("button-press-event", self._press_event)
@@ -96,66 +95,32 @@ class BodyGrid(Gtk.Grid):
         bottom_left.connect("button-release-event", self._release_event)
         bottom_right.connect("button-release-event", self._release_event)
 
-
-
     def _press_event(self, widget = None, eve = None):
         window = self.get_parent()
         cursor = Gdk.Cursor(Gdk.CursorType.CROSSHAIR)
-
         window.get_window().set_cursor(cursor)
-        self.is_dragging   = True
-        self._drag_start_x = eve.x
-        self._drag_start_y = eve.y
+
+        self.is_dragging = True
 
     def _resize_motion_event_tl(self, widget = None, eve = None):
-        # if self.is_dragging:
-        #     offset_x = eve.x - self._drag_start_x
-        #     self._current_w += offset_x
-        #     if self._current_w < 0:
-        #         self._current_w = -1
-        #
-        #     self.set_size_request(self._current_w, self._current_h)
-        #     self.get_parent().save_needed = True
-        ...
+        if self.is_dragging:
+            self._gdk_window.begin_resize_drag(Gdk.WindowEdge.NORTH_WEST, 1, eve.x_root, eve.y_root, eve.time)
 
     def _resize_motion_event_tr(self, widget = None, eve = None):
-        # if self.is_dragging:
-        #     offset_x = eve.x - self._drag_start_x
-        #     self._current_w += offset_x
-        #     if self._current_w < 0:
-        #         self._current_w = -1
-        #
-        #     self.set_size_request(self._current_w, self._current_h)
-        #     self.get_parent().save_needed = True
-        ...
+        if self.is_dragging:
+            self._gdk_window.begin_resize_drag(Gdk.WindowEdge.NORTH_EAST, 1, eve.x_root, eve.y_root, eve.time)
 
     def _resize_motion_event_bl(self, widget = None, eve = None):
-        # if self.is_dragging:
-        #     offset_x = eve.x - self._drag_start_x
-        #     self._current_w += offset_x
-        #     if self._current_w < 0:
-        #         self._current_w = -1
-        #
-        #     self.set_size_request(self._current_w, self._current_h)
-        #     self.get_parent().save_needed = True
-        ...
+        if self.is_dragging:
+            self._gdk_window.begin_resize_drag(Gdk.WindowEdge.SOUTH_WEST, 1, eve.x_root, eve.y_root, eve.time)
 
     def _resize_motion_event_br(self, widget = None, eve = None):
-        # if self.is_dragging:
-        #     offset_x = eve.x - self._drag_start_x
-        #     self._current_w += offset_x
-        #     if self._current_w < 0:
-        #         self._current_w = -1
-        #
-        #     self.set_size_request(self._current_w, self._current_h)
-        #     self.get_parent().save_needed = True
-        ...
+        if self.is_dragging:
+            self._gdk_window.begin_resize_drag(Gdk.WindowEdge.SOUTH_EAST, 1, eve.x_root, eve.y_root, eve.time)
 
     def _release_event(self, widget = None, eve = None):
         window       = self.get_parent()
         watch_cursor = Gdk.Cursor(Gdk.CursorType.ARROW)
         window.get_window().set_cursor(watch_cursor)
 
-        self.is_dragging   = False
-        self._drag_start_x = 0
-        self._drag_start_y = 0
+        self.is_dragging = False
