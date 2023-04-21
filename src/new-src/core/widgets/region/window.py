@@ -31,6 +31,7 @@ class RegionWindow(Gtk.Window):
         self.set_resizable(True)
         self.set_skip_pager_hint(True)
         self.set_skip_taskbar_hint(True)
+        self.set_has_resize_grip(True)
 
     def _setup_signals(self):
         ...
@@ -40,7 +41,7 @@ class RegionWindow(Gtk.Window):
 
     def _load_widgets(self):
         gdk_window = self.get_screen().get_root_window()
-        self.add( BodyGrid(gdk_window) )
+        self.add( BodyGrid(self, gdk_window) )
 
     def _set_window_data(self) -> None:
         screen = self.get_screen()
