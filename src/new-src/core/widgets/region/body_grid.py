@@ -47,43 +47,64 @@ class BodyGrid(Gtk.Grid):
     def _subscribe_to_events(self):
         ...
 
-
     def _load_widgets(self):
         drag_button  = Gtk.Button("")
+        close_button = Gtk.Button("x")
+        grab_button  = Gtk.Button("Grab")
         bottom_right = Gtk.Button("")
-        # box          = Gtk.Box()
         box2         = Gtk.Box()
         box3         = Gtk.Box()
+        box4         = Gtk.Box()
+        box5         = Gtk.Box()
 
         ctx  = drag_button.get_style_context()
         ctx.add_class("expand-button")
         ctx2 = bottom_right.get_style_context()
         ctx2.add_class("expand-button")
 
-        row, col      = 1, 1
-        self.attach(drag_button, col, row, 5, 1)
-        row, col      = 2, 1
+        col, row = 1, 1
+        self.attach(drag_button, col, row, 11, 1)
+        col, row = 12, 1
+        self.attach(close_button, col, row, 1, 1)
+        col, row = 1, 2
         self.attach(box2, col, row, 5, 3)
-        row, col      = 5, 1
+        col, row = 1, 5
         self.attach(box3, col, row, 4, 1)
-        row, col      = 5, 5
+        col, row = 1, 12
+        self.attach(box4, col, row, 3, 1)
+        col, row = 5, 12
+        self.attach(grab_button, col, row, 3, 1)
+        col, row = 9, 12
+        self.attach(box5, col, row, 3, 1)
+        col, row = 12, 12
         self.attach(bottom_right, col, row, 1, 1)
 
-        drag_button.set_vexpand(True)
-        drag_button.set_hexpand(True)
+        close_button.set_vexpand(False)
+        close_button.set_hexpand(False)
         box2.set_vexpand(True)
         box2.set_hexpand(True)
         box3.set_vexpand(True)
         box3.set_hexpand(True)
-
+        box4.set_vexpand(False)
+        box4.set_hexpand(True)
+        box5.set_vexpand(False)
+        box5.set_hexpand(True)
 
         drag_button.connect("button-press-event", self._press_event)
         drag_button.connect("motion-notify-event", self._move_motion_event)
         drag_button.connect("button-release-event", self._release_event)
-
+        close_button.connect("button-release-event", self._region_close)
+        grab_button.connect("button-release-event", self._region_grab)
         bottom_right.connect("button-press-event", self._press_event)
         bottom_right.connect("motion-notify-event", self._resize_motion_event)
         bottom_right.connect("button-release-event", self._release_event)
+
+
+    def _region_close(self, widget = None, eve = None):
+        event_system.emit("grab_region_hide", (self._window,))
+
+    def _region_grab(self, widget = None, eve = None):
+        event_system.emit("grab_region", (self._window,))
 
     def _press_event(self, widget = None, eve = None):
         window = self.get_parent()
@@ -95,15 +116,12 @@ class BodyGrid(Gtk.Grid):
         self._drag_start_y = eve.y_root
 
         if self._current_x == 0:
-            self._current_x, \
-            self._current_y = self._window.get_position()
+            self._current_x, self._current_y = self._window.get_position()
 
-        self._w1           = self._window.get_size()[0]  # Ref window width
-        self._h1           = self._window.get_size()[1]  # Ref window height
+        self._w1, self._h1 = self._window.get_size()
 
     def _resize_motion_event(self, widget = None, eve = None):
-        if self._update_block:
-            return
+        if self._update_block: return
 
         x1 = self._drag_start_x
         y1 = self._drag_start_y
@@ -144,7 +162,6 @@ class BodyGrid(Gtk.Grid):
 
             self._drag_start_x = eve.x_root
             self._drag_start_y = eve.y_root
-
 
             self._update_block = True
             self._window.move(self._current_x, self._current_y)

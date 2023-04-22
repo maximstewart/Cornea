@@ -33,10 +33,13 @@ class ScreenshotController:
         event_system.subscribe("grab_entire_screen", self.grab_entire_screen)
         event_system.subscribe("grab_active_window", self.grab_active_window)
         event_system.subscribe("pass_to_region_handler", self.pass_to_region_handler)
+        event_system.subscribe("grab_region_hide", self._grab_region_hide)
+        event_system.subscribe("grab_region", self._grab_region)
         event_system.subscribe("grab_selected_monitor", self.grab_selected_monitor)
 
     def _load_widgets(self):
         RegionWindow()
+
 
     def grab_entire_screen(self):
         logger.info("Grabbing Entire Screen...")
@@ -61,11 +64,44 @@ class ScreenshotController:
         pb     = Gdk.pixbuf_get_from_window(w, *w.get_geometry())
         pb.savev(settings.generate_screenshot_name(), "png", (), ())
 
+
     def pass_to_region_handler(self):
-        logger.info("Grabbing Selected Region Stub...")
-        # window  = settings.get_main_window()
-        # window.hide()
+        logger.info("Passing to Region Handler...")
+        window = settings.get_main_window()
+        window.hide()
         event_system.emit("show_region_window")
+
+    def _grab_region_hide(self, region_window):
+        region_window.hide()
+        window = settings.get_main_window()
+        window.show()
+
+    def _grab_region(self, region_window):
+        logger.info("Grabbing Selected Region...")
+        x, y = region_window.get_position()
+        w, h = region_window.get_size()
+        x2   = x + w
+        y2   = y + h
+
+        def show_region_window():
+            # NOTE: No clue why showing window has it move outta prior place.
+            #       So, move back to original spot before showing...
+            region_window.move(x, y)
+            region_window.show()
+
+        @daemon_threaded
+        def do_bounding_box_grab(x1, y1, x2, y2):
+            while region_window.is_visible():
+                ...
+
+            im = capture.grab(bbox = (x1, y1, x2, y2), childprocess = False)
+            im.save( settings.generate_screenshot_name() )
+            GLib.idle_add(show_region_window)
+
+        region_window.hide()
+        offset = 1
+        do_bounding_box_grab(x - offset, y - offset, x2 + offset, y2 + offset)
+
 
     def grab_selected_monitor(self):
         logger.info("Grabbing Monitor...")
