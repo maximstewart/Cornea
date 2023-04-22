@@ -22,8 +22,8 @@ class BodyGrid(Gtk.Grid):
         self._update_block = False
         self._drag_start_x = 0
         self._drag_start_y = 0
-        self._current_x, \
-        self._current_y    = window.get_position()
+        self._current_x    = 0
+        self._current_y    = 0
         self._w1           = 0.0
         self._h1           = 0.0
 
@@ -93,6 +93,11 @@ class BodyGrid(Gtk.Grid):
         self._is_dragging  = True
         self._drag_start_x = eve.x_root
         self._drag_start_y = eve.y_root
+
+        if self._current_x == 0:
+            self._current_x, \
+            self._current_y = self._window.get_position()
+
         self._w1           = self._window.get_size()[0]  # Ref window width
         self._h1           = self._window.get_size()[1]  # Ref window height
 
@@ -137,9 +142,9 @@ class BodyGrid(Gtk.Grid):
             else:
                 self._current_y = self._current_y
 
+            self._drag_start_x = eve.x_root
+            self._drag_start_y = eve.y_root
 
-            self._drag_start_x = self._current_x
-            self._drag_start_y = self._current_y
 
             self._update_block = True
             self._window.move(self._current_x, self._current_y)
