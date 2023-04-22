@@ -11,11 +11,11 @@ from gi.repository import Gio
 
 
 
-class PreviewPane(Gtk.AspectFrame):
+class PreviewPane(Gtk.Image):
     def __init__(self):
         super(PreviewPane, self).__init__()
 
-        self._preview_image = None
+        self.pixbuf = None
 
         self._setup_styling()
         self._setup_signals()
@@ -26,7 +26,8 @@ class PreviewPane(Gtk.AspectFrame):
 
 
     def _setup_styling(self):
-        self.set_size_request(312, 312)
+        self.set_vexpand(True)
+        self.set_hexpand(True)
 
     def _setup_signals(self):
         ...
@@ -36,21 +37,27 @@ class PreviewPane(Gtk.AspectFrame):
         event_system.subscribe("unset_image_preview", self.unset_image_preview)
 
     def _load_widgets(self):
-        self._preview_image = Gtk.Image()
         self.unset_image_preview()
-        self.add(self._preview_image)
 
     def set_image_to_view(self, image_file):
         if not image_file:
             return
 
-        images_dir   = settings.get_screenshots_dir()
-        path         = os.path.join(images_dir, image_file)
+        images_dir  = settings.get_screenshots_dir()
+        path        = os.path.join(images_dir, image_file)
+        self.pixbuf = Gtk.Image.new_from_file(path).get_pixbuf()
+        self.set_from_pixbuf( self.scale_to_container(self.pixbuf) )
 
-        pixbuf       = Gtk.Image.new_from_file(path).get_pixbuf()
-        scaledPixBuf = pixbuf.scale_simple(480, 320, 2)  # 2 = BILINEAR and is best by default
-        self._preview_image.set_from_pixbuf(scaledPixBuf)
+    def scale_to_container(self, pixbuf):
+        rect = self.get_parent().get_parent().get_allocated_size().allocation
+        pxw  = pixbuf.get_width()
+        pxh  = pixbuf.get_height()
+        h    = rect.height
+        w    = (pxw * h) / pxh
+
+        return pixbuf.scale_simple(w, h, 2)  # 2 = BILINEAR and is best by default
 
     def unset_image_preview(self):
-        pixbuf = Gtk.Image.new_from_icon_name("gtk-missing-image", 4).get_pixbuf()
-        self._preview_image.set_from_pixbuf(pixbuf)
+        self.pixbuf = None
+        pixbuf      = Gtk.Image.new_from_icon_name("gtk-missing-image", 4).get_pixbuf()
+        self.set_from_pixbuf(pixbuf)

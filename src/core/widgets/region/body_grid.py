@@ -48,9 +48,9 @@ class BodyGrid(Gtk.Grid):
         ...
 
     def _load_widgets(self):
-        drag_button  = Gtk.Button("")
-        close_button = Gtk.Button("x")
-        grab_button  = Gtk.Button("Grab")
+        drag_button  = Gtk.Button("...")
+        close_button = Gtk.Button("")
+        grab_button  = Gtk.Button("")
         bottom_right = Gtk.Button("")
         box2         = Gtk.Box()
         box3         = Gtk.Box()
@@ -58,9 +58,13 @@ class BodyGrid(Gtk.Grid):
         box5         = Gtk.Box()
 
         ctx  = drag_button.get_style_context()
-        ctx.add_class("expand-button")
+        ctx.add_class("transparent-button")
         ctx2 = bottom_right.get_style_context()
-        ctx2.add_class("expand-button")
+        ctx2.add_class("transparent-button")
+        ctx3 = close_button.get_style_context()
+        ctx3.add_class("transparent-button")
+        ctx4 = grab_button.get_style_context()
+        ctx4.add_class("transparent-button")
 
         col, row = 1, 1
         self.attach(drag_button, col, row, 11, 1)
@@ -81,6 +85,13 @@ class BodyGrid(Gtk.Grid):
 
         close_button.set_vexpand(False)
         close_button.set_hexpand(False)
+        close_button.set_image( Gtk.Image.new_from_icon_name("gtk-close", 4) )
+        close_button.set_always_show_image(True)
+        grab_button.set_image( Gtk.Image.new_from_icon_name("gtk-media-record", 4) )
+        grab_button.set_always_show_image(True)
+        bottom_right.set_image( Gtk.Image.new_from_icon_name("gtk-zoom-fit", 4) )
+        bottom_right.set_always_show_image(True)
+
         box2.set_vexpand(True)
         box2.set_hexpand(True)
         box3.set_vexpand(True)
