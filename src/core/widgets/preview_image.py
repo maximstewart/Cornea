@@ -15,7 +15,8 @@ class PreviewPane(Gtk.Image):
     def __init__(self):
         super(PreviewPane, self).__init__()
 
-        self.pixbuf = None
+        self.pixbuf     = None
+        self.file_name = None
 
         self._setup_styling()
         self._setup_signals()
@@ -39,17 +40,18 @@ class PreviewPane(Gtk.Image):
     def _load_widgets(self):
         self.unset_image_preview()
 
-    def set_image_to_view(self, image_file):
-        if not image_file:
+    def set_image_to_view(self, file_name):
+        if not file_name:
             return
 
+        self.file_name = file_name
         images_dir  = settings.get_screenshots_dir()
-        path        = os.path.join(images_dir, image_file)
+        path        = os.path.join(images_dir, file_name)
         self.pixbuf = Gtk.Image.new_from_file(path).get_pixbuf()
         self.set_from_pixbuf( self.scale_to_container(self.pixbuf) )
 
     def scale_to_container(self, pixbuf):
-        rect = self.get_parent().get_parent().get_allocated_size().allocation
+        rect = self.get_parent().get_parent().get_parent().get_allocated_size().allocation
         pxw  = pixbuf.get_width()
         pxh  = pixbuf.get_height()
         h    = rect.height

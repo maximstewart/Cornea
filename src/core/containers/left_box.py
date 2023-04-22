@@ -37,15 +37,28 @@ class PreviewScroll(Gtk.ScrolledWindow):
 
     def _load_widgets(self):
         viewport = Gtk.Viewport()
-        viewport.add(PreviewPane())
-        viewport.connect("size-allocate", self._scale_image)
+        eve_box  = Gtk.EventBox()
+
+        eve_box.add(PreviewPane())
+        viewport.add(eve_box)
         self.add(viewport)
 
+        eve_box.connect("button-release-event", self._handle_clicks)
+        viewport.connect("size-allocate", self._scale_image)
+
     def _scale_image(self, widget = None, allocation = None):
-        child = widget.get_children()[0]
-        if not child.pixbuf in ("", None):
-            pixbuf = child.scale_to_container(child.pixbuf)
-            child.set_from_pixbuf(pixbuf)
+        preview_image = widget.get_children()[0].get_children()[0]
+
+        if not preview_image.pixbuf in ("", None):
+            pixbuf = preview_image.scale_to_container(preview_image.pixbuf)
+            preview_image.set_from_pixbuf(pixbuf)
+
+    def _handle_clicks(self, widget = None, eve = None):
+        preview_image = widget.get_children()[0]
+
+        if eve.button == 3 and not preview_image.file_name in ("", None):
+            event_system.emit("set_revert_data", (preview_image.file_name,))
+            event_system.emit("show_menu", (preview_image.file_name,))
 
 
 class LeftBox(Gtk.Box):
