@@ -27,7 +27,6 @@ class MenuPopover(Gtk.Popover):
         self.set_size_request(360, -1)
 
     def _setup_signals(self):
-        # self.connect("grab-focus", self.set_revert_data)
         ...
 
     def _subscribe_to_events(self):
@@ -45,10 +44,10 @@ class MenuPopover(Gtk.Popover):
         open_button   = Gtk.Button(label = "Open")
         delete_button = Gtk.Button(label = "Delete")
 
-        revert_button.set_image( Gtk.Image.new_from_icon_name("gtk-undo", 16) )
-        rename_button.set_image( Gtk.Image.new_from_icon_name("gtk-edit", 16) )
-        open_button.set_image( Gtk.Image.new_from_icon_name("gtk-open", 16) )
-        delete_button.set_image( Gtk.Image.new_from_icon_name("gtk-delete", 16) )
+        revert_button.set_image( Gtk.Image.new_from_icon_name("gtk-undo", 4) )
+        rename_button.set_image( Gtk.Image.new_from_icon_name("gtk-edit", 4) )
+        open_button.set_image( Gtk.Image.new_from_icon_name("gtk-open", 4) )
+        delete_button.set_image( Gtk.Image.new_from_icon_name("gtk-delete", 4) )
 
         revert_button.set_always_show_image(True)
         rename_button.set_always_show_image(True)
@@ -113,5 +112,6 @@ class MenuPopover(Gtk.Popover):
             if os.path.isfile(file):
                 os.remove(file)
                 self.popdown()
+                event_system.emit("unset_image_preview")
         except Exception as e:
             logger.info(e)

@@ -33,9 +33,11 @@ class PreviewPane(Gtk.AspectFrame):
 
     def _subscribe_to_events(self):
         event_system.subscribe("set_image_to_view", self.set_image_to_view)
+        event_system.subscribe("unset_image_preview", self.unset_image_preview)
 
     def _load_widgets(self):
         self._preview_image = Gtk.Image()
+        self.unset_image_preview()
         self.add(self._preview_image)
 
     def set_image_to_view(self, image_file):
@@ -48,3 +50,7 @@ class PreviewPane(Gtk.AspectFrame):
         pixbuf       = Gtk.Image.new_from_file(path).get_pixbuf()
         scaledPixBuf = pixbuf.scale_simple(480, 320, 2)  # 2 = BILINEAR and is best by default
         self._preview_image.set_from_pixbuf(scaledPixBuf)
+
+    def unset_image_preview(self):
+        pixbuf = Gtk.Image.new_from_icon_name("gtk-missing-image", 4).get_pixbuf()
+        self._preview_image.set_from_pixbuf(pixbuf)
