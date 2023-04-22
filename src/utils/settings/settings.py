@@ -31,7 +31,6 @@ class Settings(StartCheckMixin, Singleton):
         self._PLUGINS_PATH      = f"{self._HOME_CONFIG_PATH}/plugins"
         self._DEFAULT_ICONS     = f"{self._HOME_CONFIG_PATH}/icons"
         self._CONFIG_FILE       = f"{self._HOME_CONFIG_PATH}/settings.json"
-        self._GLADE_FILE        = f"{self._HOME_CONFIG_PATH}/Main_Window.glade"
         self._CSS_FILE          = f"{self._HOME_CONFIG_PATH}/stylesheet.css"
         self._KEY_BINDINGS_FILE = f"{self._HOME_CONFIG_PATH}/key-bindings.json"
         self._PID_FILE          = f"{self._HOME_CONFIG_PATH}/{app_name.lower()}.pid"
@@ -58,10 +57,6 @@ class Settings(StartCheckMixin, Singleton):
             self._DEFAULT_ICONS = f"{self._USR_PATH}/icons"
             if not os.path.exists(self._DEFAULT_ICONS):
                 raise MissingConfigError("Unable to find the application icons directory.")
-        if not os.path.exists(self._GLADE_FILE):
-            self._GLADE_FILE   = f"{self._USR_PATH}/Main_Window.glade"
-            if not os.path.exists(self._GLADE_FILE):
-                raise MissingConfigError("Unable to find the application Glade file.")
         if not os.path.exists(self._KEY_BINDINGS_FILE):
             self._KEY_BINDINGS_FILE = f"{self._USR_PATH}/key-bindings.json"
             if not os.path.exists(self._KEY_BINDINGS_FILE):
@@ -138,7 +133,6 @@ class Settings(StartCheckMixin, Singleton):
     def get_main_window_height(self) -> any: return self._main_window_h
     def get_builder(self)            -> any: return self._builder
     def get_paint_bg_color(self)     -> any: return self.PAINT_BG_COLOR
-    def get_glade_file(self)         -> str: return self._GLADE_FILE
     def get_ui_widgets_path(self)    -> str: return self._UI_WIDEGTS_PATH
     def get_context_menu_data(self)  -> str: return self._context_menu_data
 
