@@ -11,6 +11,7 @@ from gi.repository import GLib
 # Application imports
 
 
+
 class BodyGrid(Gtk.Grid):
     def __init__(self, window, gdk_window):
         super(BodyGrid, self).__init__()
@@ -90,8 +91,8 @@ class BodyGrid(Gtk.Grid):
         window.get_window().set_cursor(cursor)
 
         self._is_dragging  = True
-        self._drag_start_x = eve.x
-        self._drag_start_y = eve.y
+        self._drag_start_x = eve.x_root
+        self._drag_start_y = eve.y_root
         self._w1           = self._window.get_size()[0]  # Ref window width
         self._h1           = self._window.get_size()[1]  # Ref window height
 
@@ -101,8 +102,8 @@ class BodyGrid(Gtk.Grid):
 
         x1 = self._drag_start_x
         y1 = self._drag_start_y
-        x2 = eve.x
-        y2 = eve.y
+        x2 = eve.x_root
+        y2 = eve.y_root
         w  = 0
         h  = 0
 
@@ -121,17 +122,24 @@ class BodyGrid(Gtk.Grid):
         self._update_block = False
 
     def _move_motion_event(self, widget = None, eve = None):
-        if self._update_block:
-            self._drag_start_x = eve.x
-            self._drag_start_y = eve.y
-            return
-
         if self._is_dragging:
-            offset_x = eve.x - self._drag_start_x
-            offset_y = eve.y - self._drag_start_y
+            if eve.x_root > self._drag_start_x:
+                self._current_x += (eve.x_root - self._drag_start_x)
+            elif eve.x_root < self._drag_start_x:
+                self._current_x -= (self._drag_start_x - eve.x_root)
+            else:
+                self._current_x = self._current_x
 
-            self._current_x += offset_x
-            self._current_y += offset_y
+            if eve.y_root > self._drag_start_y:
+                self._current_y += (eve.y_root - self._drag_start_y)
+            elif eve.y_root < self._drag_start_y:
+                self._current_y -= (self._drag_start_y - eve.y_root)
+            else:
+                self._current_y = self._current_y
+
+
+            self._drag_start_x = self._current_x
+            self._drag_start_y = self._current_y
 
             self._update_block = True
             self._window.move(self._current_x, self._current_y)
