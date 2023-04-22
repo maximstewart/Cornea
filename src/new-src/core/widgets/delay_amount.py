@@ -31,6 +31,7 @@ class DelayAmount(Gtk.Box):
         ...
 
     def _subscribe_to_events(self):
+        event_system.subscribe("set_grab_delay", self.set_grab_delay)
         event_system.subscribe("grab_delay", self.grab_delay)
 
     def _load_widgets(self):
@@ -46,6 +47,11 @@ class DelayAmount(Gtk.Box):
 
         self.add(label)
         self.add(spinner)
+
+    def set_grab_delay(self, wait = 0.0):
+        delay_amount = self.get_children()[1]
+        delay_amount.set_value(wait)
+
 
     def grab_delay(self, wait = None):
         delay_amount = self.get_children()[1]

@@ -9,7 +9,7 @@ from gi.repository import Gtk
 from ..widgets.radio_buttons import RadioButtons
 from ..widgets.delay_amount import DelayAmount
 from ..widgets.preview_image import PreviewPane
-
+from ..widgets.menu_popover import MenuPopover
 
 
 class LeftBox(Gtk.Box):
@@ -30,6 +30,11 @@ class LeftBox(Gtk.Box):
         ...
 
     def _load_widgets(self):
+        menu         = MenuPopover()
+        delay_amount = DelayAmount()
+        menu.set_relative_to(delay_amount)
+        menu.set_position(Gtk.PositionType.BOTTOM)
+
         self.add(RadioButtons())
-        self.add(DelayAmount())
+        self.add(delay_amount)
         self.add(PreviewPane())

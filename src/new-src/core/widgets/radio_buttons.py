@@ -51,7 +51,26 @@ class RadioButtons(Gtk.Box):
             else:
                 last_child = child
 
+            child.connect("released", self._set_data_state)
+
     def _get_active_type(self):
         group        = self.get_children()[0].get_group()
         active_radio = [r for r in group if r.get_active()]
         return active_radio[0]
+
+    def _set_data_state(self, widget = None, eve = None):
+        label       = widget.get_label()
+        isSensitive = False
+        wait        = 0.0
+
+        if label == "Entire Screen":
+            ...
+        if label == "Active Window":
+            wait = 4.0
+        if label == "Select Region":
+            ...
+        if label == "Select Monitor":
+            isSensitive = True
+
+        event_system.emit("set_grab_delay", (wait,))
+        event_system.emit("set_monitor_sensitive", (isSensitive,))

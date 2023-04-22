@@ -34,6 +34,7 @@ class MonitorList(TreeMixin, Gtk.Box):
 
     def _subscribe_to_events(self):
         event_system.subscribe("get_selected_monitor", self.get_selected_monitor)
+        event_system.subscribe("set_monitor_sensitive", self.set_monitor_sensitive)
 
     def _load_widgets(self):
         grid, self._store   = self._create_treeview_widget("Monitors")
@@ -41,6 +42,7 @@ class MonitorList(TreeMixin, Gtk.Box):
 
         self._load_monitor_store()
 
+        self.set_monitor_sensitive()
         grid.set_hexpand(True)
         self.add(grid)
 
@@ -53,9 +55,14 @@ class MonitorList(TreeMixin, Gtk.Box):
                 self._store.append([mon])
             i += 1
 
+        self._monitors_view.set_cursor(0)
+
     def get_selected_monitor(self):
         iter = self._monitors_view.get_selection().get_selected()[1]
         path = self._store.get_path(iter)
 
         # Slot 0 is ref monitor. Need to add 1 to get proper slot
         return self.MONITORS[int(str(path)) + 1]
+
+    def set_monitor_sensitive(self, isSensitive = False):
+        self._monitors_view.set_sensitive(isSensitive)

@@ -2,10 +2,10 @@
     background-color: rgba(0, 0, 0, 0.0);
     /* border: 2px solid rgba(136, 204, 39, 1); */
     /* Dark Bergundy */
-    border: 2px solid rgba(116, 0, 0, 0.64);
+    border: 2px solid rgba(116, 0, 0, 1);
 }
 
 .expand-button {
     background-color: rgba(0, 0, 0, 0.0);
-    border: 2px solid rgba(56, 56, 56, 0.46);
+    border: 2px solid rgba(56, 56, 56, 1);
 }

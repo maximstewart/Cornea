@@ -1,9 +1,11 @@
 # Python imports
+import os
 
 # Lib imports
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
+from gi.repository import Gio
 
 # Application imports
 
@@ -17,6 +19,7 @@ class PreviewPane(Gtk.AspectFrame):
 
         self._setup_styling()
         self._setup_signals()
+        self._subscribe_to_events()
         self._load_widgets()
 
         self.show_all()
@@ -28,6 +31,20 @@ class PreviewPane(Gtk.AspectFrame):
     def _setup_signals(self):
         ...
 
+    def _subscribe_to_events(self):
+        event_system.subscribe("set_image_to_view", self.set_image_to_view)
+
     def _load_widgets(self):
         self._preview_image = Gtk.Image()
         self.add(self._preview_image)
+
+    def set_image_to_view(self, image_file):
+        if not image_file:
+            return
+
+        images_dir   = settings.get_screenshots_dir()
+        path         = os.path.join(images_dir, image_file)
+
+        pixbuf       = Gtk.Image.new_from_file(path).get_pixbuf()
+        scaledPixBuf = pixbuf.scale_simple(480, 320, 2)  # 2 = BILINEAR and is best by default
+        self._preview_image.set_from_pixbuf(scaledPixBuf)
