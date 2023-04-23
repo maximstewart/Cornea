@@ -13,7 +13,7 @@ from gi.repository import GLib
 from .mixins.signals_mixins import SignalsMixins
 from .controller_data import ControllerData
 from .screenshot_controller import ScreenshotController
-from .containers.core_widget import CoreWidget
+from .containers.base_container import BaseContainer
 
 
 
@@ -55,18 +55,18 @@ class Controller(SignalsMixins, ControllerData):
     def _load_widgets(self):
         ScreenshotController()
 
+    def _tggl_top_main_menubar(self):
+        print("_tggl_top_main_menubar > stub...")
+
     def load_glade_file(self):
         self.builder     = Gtk.Builder()
         # self.builder.add_from_file(settings.get_glade_file())
         self.builder.expose_object("main_window", self.window)
 
         settings.set_builder(self.builder)
-        self.core_widget = CoreWidget()
+        self.base_container = BaseContainer()
 
-        settings.register_signals_to_builder([self, self.core_widget])
+        settings.register_signals_to_builder([self, self.base_container])
 
-    def get_core_widget(self):
-        return self.core_widget
-
-    def _tggl_top_main_menubar(self):
-        print("_tggl_top_main_menubar > stub...")
+    def get_base_container(self):
+        return self.base_container

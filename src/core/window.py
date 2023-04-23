@@ -67,7 +67,7 @@ class Window(Gtk.ApplicationWindow):
         if not self._controller:
             raise ControllerStartException("Controller exited and doesn't exist...")
 
-        self.add( self._controller.get_core_widget() )
+        self.add( self._controller.get_base_container() )
 
     def _set_window_data(self) -> None:
         screen = self.get_screen()

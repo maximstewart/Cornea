@@ -15,7 +15,7 @@ class ControllerData:
     def setup_controller_data(self) -> None:
         self.window      = settings.get_main_window()
         self.builder     = None
-        self.core_widget = None
+        self.base_container   = None
         self.was_midified_key = False
         self.ctrl_down   = False
         self.shift_down  = False
