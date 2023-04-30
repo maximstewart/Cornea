@@ -26,6 +26,7 @@ class RegionWindow(Gtk.Window):
 
     def _setup_styling(self):
         self.set_default_size(600, 480)
+        self.set_keep_above(True)
         self.set_deletable(False)
         self.set_decorated(False)
         self.set_resizable(True)
