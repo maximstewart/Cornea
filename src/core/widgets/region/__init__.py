@@ -1,3 +1,3 @@
 """
-    Widgets Module
+    Region Module
 """

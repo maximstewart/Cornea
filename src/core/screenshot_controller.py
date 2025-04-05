@@ -1,4 +1,5 @@
 # Python imports
+import time
 
 # Lib imports
 import gi
@@ -76,9 +77,30 @@ class ScreenshotController:
         window = settings.get_main_window()
         window.show()
 
-    def _grab_region(self, region_window):
+    def _grab_region(self, region_window, x1, y1, x2, y2):
+        def show_region_window():
+            # NOTE: No clue why showing window has it move outta prior place.
+            #       So, move back to original spot before showing...
+            region_window.move(0, 0)
+            region_window.show()
+
+        @daemon_threaded
+        def do_bounding_box_grab(x1, y1, x2, y2):
+            while region_window.is_visible():
+                ...
+
+            time.sleep(0.5)
+            im = capture.grab(bbox = (x1, y1, x2, y2), childprocess = False)
+            im.save( settings.generate_screenshot_name() )
+            GLib.idle_add(show_region_window)
+
+        region_window.hide()
+        offset = 1
+        do_bounding_box_grab(x1 - offset, y1 - offset, x2 + offset, y2 + offset)
+
+    def _old_grab_region(self, region_window):
         logger.info("Grabbing Selected Region...")
-        x, y = region_window.get_position()
+        x1, y1 = region_window.get_position()
         w, h = region_window.get_size()
         x2   = x + w
         y2   = y + h
@@ -94,13 +116,14 @@ class ScreenshotController:
             while region_window.is_visible():
                 ...
 
+            time.sleep(0.5)
             im = capture.grab(bbox = (x1, y1, x2, y2), childprocess = False)
             im.save( settings.generate_screenshot_name() )
             GLib.idle_add(show_region_window)
 
         region_window.hide()
         offset = 1
-        do_bounding_box_grab(x - offset, y - offset, x2 + offset, y2 + offset)
+        do_bounding_box_grab(x1 - offset, y1 - offset, x2 + offset, y2 + offset)
 
 
     def grab_selected_monitor(self):

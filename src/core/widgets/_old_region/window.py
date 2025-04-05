@@ -9,7 +9,7 @@ from gi.repository import Gtk
 from gi.repository import Gdk
 
 # Application imports
-from .draw_area import DrawArea
+from .body_grid import BodyGrid
 
 
 
@@ -25,9 +25,7 @@ class RegionWindow(Gtk.Window):
 
 
     def _setup_styling(self):
-        screen = Gdk.Screen.get_default()
-        ctx    = self.get_style_context()
-
+        self.set_default_size(600, 480)
         self.set_keep_above(True)
         self.set_deletable(False)
         self.set_decorated(False)
@@ -35,13 +33,6 @@ class RegionWindow(Gtk.Window):
         self.set_skip_pager_hint(True)
         self.set_skip_taskbar_hint(True)
         self.set_has_resize_grip(True)
-
-        self.move(0, 0)
-        self.set_size_request(
-            *self.get_screen_size(
-                Gdk.Display.get_default()
-            )
-        )
 
 
     def _setup_signals(self):
@@ -51,7 +42,8 @@ class RegionWindow(Gtk.Window):
         event_system.subscribe("show_region_window", self._show_region_window)
 
     def _load_widgets(self):
-        self.add( DrawArea() )
+        gdk_window = self.get_screen().get_root_window()
+        self.add( BodyGrid(self, gdk_window) )
 
     def _set_window_data(self) -> None:
         screen = self.get_screen()
@@ -60,6 +52,7 @@ class RegionWindow(Gtk.Window):
         if visual != None and screen.is_composited():
             self.set_visual(visual)
             self.set_app_paintable(True)
+            self.connect("draw", self._area_draw)
 
         # bind css file
         cssProvider  = Gtk.CssProvider()
@@ -67,19 +60,6 @@ class RegionWindow(Gtk.Window):
         screen       = Gdk.Screen.get_default()
         styleContext = Gtk.StyleContext()
         styleContext.add_provider_for_screen(screen, cssProvider, Gtk.STYLE_PROVIDER_PRIORITY_USER)
-
-    def get_screen_size(self, display):
-        mon_geoms = [
-            display.get_monitor(i).get_geometry()
-            for i in range(display.get_n_monitors())
-        ]
-
-        x0 = min(r.x            for r in mon_geoms)
-        y0 = min(r.y            for r in mon_geoms)
-        x1 = max(r.x + r.width  for r in mon_geoms)
-        y1 = max(r.y + r.height for r in mon_geoms)
-
-        return x1 - x0, y1 - y0
 
     def _area_draw(self, widget: Gtk.ApplicationWindow, cr: cairo.Context) -> None:
         cr.set_source_rgba( *(0, 0, 0, 0.0) )
